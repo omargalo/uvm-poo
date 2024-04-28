@@ -6,7 +6,7 @@
 
 using namespace std;
 
-// Forward declarations necesarias
+// Declaraciones adelantadas de clases
 class Profesor;
 class Materia;
 class Alumno;
@@ -18,12 +18,15 @@ protected:
     int edad;
     string email;
 
+// Constructor protegido para evitar instanciar objetos Persona
 public:
     Persona(const string& nombreCompleto, int edad, const string& email)
         : nombreCompleto(nombreCompleto), edad(edad), email(email) {}
 
+    // Método virtual puro
     virtual void registro() = 0;
 
+	// Métodos de acceso
     string getNombreCompleto() const {
         return nombreCompleto;
     }
@@ -35,16 +38,18 @@ public:
     }
 };
 
-// Definición completa de la clase Profesor
+// Herencia de la clase Persona
 class Profesor : public Persona {
 private:
     int empleadoId;
     list<Materia*> materias;
 
+// Constructor de la clase Profesor
 public:
     Profesor(const string& nombreCompleto, int edad, const string& email, int empleadoId)
         : Persona(nombreCompleto, edad, email), empleadoId(empleadoId) {}
 
+	// Método virtual puro
     void registro() override {
         cout << "Profesor registrado: " << nombreCompleto << endl;
     }
@@ -81,7 +86,7 @@ public:
     }
 };
 
-// Definición completa de la clase Alumno
+// Herencia de la clase Persona
 class Alumno : public Persona {
 private:
     int matricula;
@@ -261,7 +266,6 @@ void mostrarMenu(const map<int, Profesor*>& profesores, const map<int, Materia*>
         }
     } while (opcion != 9);
 }
-
 
 int main() {
     map<int, Profesor*> profesores;
