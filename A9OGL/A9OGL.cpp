@@ -2,6 +2,7 @@
 #include <string>
 #include <list>
 #include <map>
+#include <limits>
 
 using namespace std;
 
@@ -25,6 +26,12 @@ public:
 
     string getNombreCompleto() const {
         return nombreCompleto;
+    }
+    string getEmail() const {
+        return email;
+    }
+    int getEdad() const {
+        return edad;
     }
 };
 
@@ -69,6 +76,9 @@ public:
     string getNombreMateria() const {
         return nombreMateria;
     }
+    Profesor* getProfesor() const {
+        return profesor;
+    }
 };
 
 // Definición completa de la clase Alumno
@@ -98,7 +108,7 @@ void Profesor::asignarMateria(Materia* materia) {
 }
 
 void Profesor::listarMaterias() {
-    cout << "Materias enseñadas por " << nombreCompleto << ":" << endl;
+    cout << "Materias impartidas por " << nombreCompleto << ":" << endl;
     for (auto& materia : materias) {
         cout << materia->getNombreMateria() << endl;
     }
@@ -175,7 +185,8 @@ void asignarMateriasAAlumnos(map<int, Alumno*>& alumnos, map<int, Materia*>& mat
         cout << "Asignando materias a " << alumno->getNombreCompleto() << endl;
         int count = 0;
         for (auto& [materiaId, materia] : materias) {
-            if (count < 2) { // Asigna solo dos materias a cada alumno
+            // Asigna solo dos materias a cada alumno
+            if (count < 2) {
                 alumno->asignarMateria(materia);
                 count++;
             }
@@ -183,6 +194,74 @@ void asignarMateriasAAlumnos(map<int, Alumno*>& alumnos, map<int, Materia*>& mat
         alumno->listarMaterias();
     }
 }
+
+void mostrarProfesor(const map<int, Profesor*>& profesores, int id) {
+    auto it = profesores.find(id);
+    if (it != profesores.end()) {
+        Profesor* prof = it->second;
+        cout << "Profesor ID: " << id << ", Nombre: " << prof->getNombreCompleto()
+            << ", Email: " << prof->getEmail() << ", Edad: " << prof->getEdad() << endl;
+        prof->listarMaterias();
+    }
+    else {
+        cout << "Profesor no encontrado." << endl;
+    }
+}
+
+void mostrarMateria(const map<int, Materia*>& materias, int id) {
+    auto it = materias.find(id);
+    if (it != materias.end()) {
+        Materia* mat = it->second;
+        Profesor* prof = mat->getProfesor();
+        cout << "Materia ID: " << id << ", Nombre: " << mat->getNombreMateria()
+            << ", Profesor: " << (prof ? prof->getNombreCompleto() : "Sin asignar") << endl;
+    }
+    else {
+        cout << "Materia no encontrada." << endl;
+    }
+}
+
+void mostrarAlumno(const map<int, Alumno*>& alumnos, int id) {
+    auto it = alumnos.find(id);
+    if (it != alumnos.end()) {
+        Alumno* alu = it->second;
+        cout << "Alumno ID: " << id << ", Nombre: " << alu->getNombreCompleto()
+            << ", Email: " << alu->getEmail() << ", Edad: " << alu->getEdad() << endl;
+        alu->listarMaterias();
+    }
+    else {
+        cout << "Alumno no encontrado." << endl;
+    }
+}
+
+void mostrarMenu(const map<int, Profesor*>& profesores, const map<int, Materia*>& materias, const map<int, Alumno*>& alumnos) {
+    int opcion, id;
+    do {
+        cout << "\nMenu:\n1. Profesor\n2. Materia\n3. Alumno\n9. Salir\nSeleccione una opcion: ";
+        cin >> opcion;
+
+        if (opcion == 9) break;
+
+        cout << "Ingrese el ID del registro: ";
+        cin >> id;
+
+        switch (opcion) {
+        case 1:
+            mostrarProfesor(profesores, id);
+            break;
+        case 2:
+            mostrarMateria(materias, id);
+            break;
+        case 3:
+            mostrarAlumno(alumnos, id);
+            break;
+        default:
+            cout << "Opcion no valida." << endl;
+            break;
+        }
+    } while (opcion != 9);
+}
+
 
 int main() {
     map<int, Profesor*> profesores;
@@ -203,6 +282,9 @@ int main() {
     }
 
     asignarMateriasAAlumnos(alumnos, materias);
+
+    // Mostrar el menú
+    mostrarMenu(profesores, materias, alumnos);
 
     // Limpieza de memoria
     for (auto& [key, prof] : profesores) delete prof;
